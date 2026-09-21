@@ -31,8 +31,8 @@ public class Yahtzee {
 
     /**
      * Starts the program and runs the top-level loop until the user quits.
-     * Choosing play runs setup and then the game loop; choosing quit ends
-     * the program.
+     * Choosing play runs setup, the game loop, and the final score
+     * display; choosing quit ends the program.
      */
     public void start() {
         boolean running = true;
@@ -41,6 +41,7 @@ public class Yahtzee {
             if (choice == 1) {
                 gameSetup();
                 gameLoop();
+                displayResults();
             } else {
                 running = false;
             }
@@ -78,8 +79,20 @@ public class Yahtzee {
         }
         while (!gameComplete()) {
             for (Player player : players) {
-                player.takeTurn(dice);
+                if (!player.isComplete()) {
+                    player.takeTurn(dice);
+                }
             }
+        }
+    }
+
+    /**
+     * Prints each player's final scorecard after the game ends.
+     */
+    private void displayResults() {
+        System.out.println("Game over");
+        for (Player player : players) {
+            System.out.println(player);
         }
     }
 
