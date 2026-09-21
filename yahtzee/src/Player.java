@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents one player as a name plus a scorecard, and runs that
- * player's turn with the shared dice set.
+ * Represents one player as a name plus a scorecard, and runs that player's turn
+ * with the shared dice set.
  *
  * @author Kaustubh Pasumarthi
  * @version 2026.09.21.1
@@ -29,24 +29,26 @@ public class Player {
      */
     private final Board board;
 
+
     /**
      * Creates a player with the given name and an empty scorecard.
      *
      * @param name
-     *            the player's name
+     *     the player's name
      */
     public Player(String name) {
         this.name = name;
         this.board = new Board();
     }
 
+
     /**
-     * Runs this player's turn using the shared dice. The player may
-     * hold, release, and roll up to three times, then must successfully
-     * score or scratch one available section before the turn ends.
+     * Runs this player's turn using the shared dice. The player may hold,
+     * release, and roll up to three times, then must successfully score or
+     * scratch one available section before the turn ends.
      *
      * @param dice
-     *            the shared dice set used for this turn
+     *     the shared dice set used for this turn
      */
     public void takeTurn(DiceSet dice) {
         if (isComplete()) {
@@ -74,6 +76,7 @@ public class Player {
         }
     }
 
+
     /**
      * Returns whether this player's scorecard is complete.
      *
@@ -82,6 +85,7 @@ public class Player {
     public boolean isComplete() {
         return board.isComplete();
     }
+
 
     /**
      * Returns this player's name and scorecard display.
@@ -93,11 +97,12 @@ public class Player {
         return name + "\n" + board;
     }
 
+
     /**
      * Asks the player to choose the next turn action.
      *
      * @param rollsUsed
-     *            how many rolls have already been used this turn
+     *     how many rolls have already been used this turn
      * @return the selected action name
      */
     private String chooseAction(int rollsUsed) {
@@ -109,38 +114,41 @@ public class Player {
         }
         options.add("Score");
         options.add("Scratch");
-        int choice = new OptionInput("Choose an action", options).get();
+        int choice = new Input.Option("Choose an action", options).get();
         return options.get(choice - 1);
     }
+
 
     /**
      * Holds one die chosen from a numbered menu.
      *
      * @param dice
-     *            the shared dice set
+     *     the shared dice set
      */
     private void holdDie(DiceSet dice) {
         int choice = chooseDie("Choose a die to hold");
         dice.hold(choice - 1);
     }
 
+
     /**
      * Releases one die chosen from a numbered menu.
      *
      * @param dice
-     *            the shared dice set
+     *     the shared dice set
      */
     private void releaseDie(DiceSet dice) {
         int choice = chooseDie("Choose a die to release");
         dice.release(choice - 1);
     }
 
+
     /**
-     * Displays a menu of the five dice and returns the player's
-     * 1-based selection.
+     * Displays a menu of the five dice and returns the player's 1-based
+     * selection.
      *
      * @param prompt
-     *            the input prompt
+     *     the input prompt
      * @return a die number from 1 through 5
      */
     private int chooseDie(String prompt) {
@@ -148,19 +156,21 @@ public class Player {
         for (int i = 1; i <= NUM_DICE; i++) {
             options.add("Die " + i);
         }
-        return new OptionInput(prompt, options).get();
+        return new Input.Option(prompt, options).get();
     }
 
+
     /**
-     * Attempts to score one available section with the current dice.
-     * A failed attempt does not end the turn.
+     * Attempts to score one available section with the current dice. A failed
+     * attempt does not end the turn.
      *
      * @param dice
-     *            the shared dice set
+     *     the shared dice set
      * @return true if the section was scored
      */
     private boolean tryScore(DiceSet dice) {
-        Board.Section section = chooseSection("Choose a section to score");
+        Board.Section section =
+            chooseSection("Choose a section to score", dice);
         if (section == null) {
             return false;
         }
@@ -172,15 +182,16 @@ public class Player {
         return true;
     }
 
+
     /**
-     * Attempts to scratch one available section. A failed attempt does
-     * not end the turn.
+     * Attempts to scratch one available section. A failed attempt does not end
+     * the turn.
      *
      * @return true if the section was scratched
      */
     private boolean tryScratch() {
         Board.Section section =
-            chooseSection("Choose a section to scratch");
+            chooseSection("Choose a section to scratch", null);
         if (section == null) {
             return false;
         }
@@ -191,23 +202,35 @@ public class Player {
         return true;
     }
 
+
     /**
      * Asks the player to pick one unused scorecard section.
      *
      * @param prompt
-     *            the input prompt
+     *     the input prompt
      * @return the chosen section, or null if none are available
      */
-    private Board.Section chooseSection(String prompt) {
+    private Board.Section chooseSection(String prompt, DiceSet dice) {
         List<Board.Section> available = board.getAvailableSections();
+        List<Board.Section> scoreable = available;
+
+        if (dice != null) {
+            scoreable = dice.getValidSections();
+        }
+
         if (available == null || available.isEmpty()) {
             return null;
         }
+
         List<String> options = new ArrayList<>();
         for (Board.Section section : available) {
+            if (!scoreable.contains(section)) {
+                continue; // don't add
+            }
             options.add(section.toString());
         }
-        int choice = new OptionInput(prompt, options).get();
+
+        int choice = new Input.Option(prompt, options).get();
         return available.get(choice - 1);
     }
 }
