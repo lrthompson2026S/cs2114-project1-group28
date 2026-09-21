@@ -118,7 +118,7 @@ public class Board {
                 return false;
             }
 
-            switch(section) {
+            switch (section) {
                 case Aces -> sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Aces)).sum());
                 case Twos -> sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Twos)).sum());
                 case Threes -> sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Threes)).sum());
@@ -127,7 +127,7 @@ public class Board {
                 case Sixes -> sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Sixes)).sum());
             }
 
-            return true; 
+            return true;
         }
 
         /**
@@ -198,18 +198,209 @@ public class Board {
         }
     }
 
+    /**
+     * <p>
+     * Upper <br>
+     * Represents the upper section of the Yahtzee board.
+     * </p>
+     * 
+     * @author Lucas Thompson (lrthompson@vt.edu)
+     * @since 09.16.2026
+     */
     public class Lower {
+        /**
+         * <p>
+         * Section <br>
+         * Represents a section of the lower board.
+         * </p>
+         * 
+         * @author Lucas Thompson (lrthompson@vt.edu)
+         * @since 09.16.2026
+         */
         public enum Section implements Board.Section {
             ThreeOfKind,
             FourOfKind,
             FullHouse,
-            SmStraight,
-            LgStraight,
+            SmallStraight,
+            LargeStraight,
             Yahtzee,
             Chance
         }
 
+        /**
+         * <p>
+         * Represents the board eg. <br>
+         * null -> not scored -> __ <br>
+         * number -> scored with that number -> number <br>
+         * 0 -> scratched -> X <br>
+         * </p>
+         * 
+         * @since 09.16.2026
+         */
         private Map<Lower.Section, Integer> sections;
+
+        /**
+         * Creates a new Lower section.
+         * 
+         * @since 09.16.2026
+         */
+        public Lower() {
+            sections = new HashMap<>();
+
+            for (Lower.Section section : Lower.Section.values()) {
+                sections.put(section, null);
+            }
+        }
+
+        /**
+         * <p>
+         * Checks if a section has been scored.
+         * </p>
+         * 
+         * @param section the section to check
+         * @return true if the section has been scored, false otherwise
+         * @throws IllegalArgumentException if the section is invalid
+         * @since 09.16.2026
+         */
+        public boolean isScored(Lower.Section section) throws IllegalArgumentException {
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException("Invalid section: " + section);
+            }
+
+            return sections.get(section) != null;
+        }
+
+        /**
+         * <p>
+         * Scores a section based on the dice roll.
+         * </p>
+         * 
+         * @param section the section to score
+         * @param dice    the current dice state
+         * @return true if the section was scored, false otherwise
+         * @throws IllegalArgumentException if the section is invalid
+         * @since 09.16.2026
+         */
+        public boolean scoreSection(Lower.Section section, DiceSet dice) throws IllegalArgumentException {
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException("Invalid section: " + section);
+            }
+
+            if (sections.get(section) != null) {
+                return false;
+            }
+
+            switch (section) {
+                case ThreeOfKind -> sections.put(section, threeOfKindScore(dice));
+                case FourOfKind -> sections.put(section, fourOfKindScore(dice));
+                case FullHouse -> sections.put(section, fullHouseScore(dice));
+                case SmallStraight -> sections.put(section, smallStraightScore(dice));
+                case LargeStraight -> sections.put(section, largeStraightScore(dice));
+                case Yahtzee -> sections.put(section, yahtzeeScore(dice));
+                case Chance -> sections.put(section, chanceScore(dice));
+            }
+
+            return true;
+        }
+
+        /**
+         * <p>
+         * Calculates the total score for the lower section.
+         * </p>
+         * 
+         * @return the total score
+         * @since 09.16.2026
+         */
+        public int totalScore() {
+            int sum = 0;
+
+            for (Integer value : sections.values()) {
+                if (value != null) {
+                    sum += value;
+                }
+            }
+            return sum;
+        }
+
+        /**
+         * <p>
+         * Gets a list of available sections that have not been scored yet.
+         * </p>
+         * 
+         * @return a list of available sections
+         * @since 09.16.2026
+         */
+        public List<Lower.Section> getAvailableSections() {
+            List<Lower.Section> availableSections = new ArrayList<>();
+
+            for (Map.Entry<Lower.Section, Integer> entry : sections.entrySet()) {
+                if (entry.getValue() == null) { // a section is available if unscored (null)
+                    availableSections.add(entry.getKey());
+                }
+            }
+
+            return availableSections;
+        }
+
+        /**
+         * <p>
+         * Attempts to scratch a section.
+         * </p>
+         * 
+         * @param section the section to scratch
+         * @return true if the section was scratched, false otherwise
+         * @throws IllegalArgumentException if the section is invalid
+         * @since 09.16.2026
+         */
+        public boolean scratch(Lower.Section section) {
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException("Invalid section: " + section);
+            }
+
+            if (sections.get(section) != null) {
+                return false;
+            }
+
+            sections.put(section, 0);
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "";
+        }
+
+        private Integer threeOfKindScore(DiceSet dice) {
+            return IntStream.of(dice.getScoringValues(Lower.Section.ThreeOfKind)).sum();
+        }
+
+        private Integer fourOfKindScore(DiceSet dice) {
+            return IntStream.of(dice.getScoringValues(Lower.Section.FourOfKind)).sum();
+        }
+
+        private Integer fullHouseScore(DiceSet dice) {
+            if (dice.getScoringValues(Lower.Section.FullHouse).length == 0) {
+                return 0;
+            }
+            return IntStream.of(dice.getScoringValues(Lower.Section.FullHouse)).sum();
+        }
+
+        private Integer smallStraightScore(DiceSet dice) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        private Integer largeStraightScore(DiceSet dice) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        private Integer yahtzeeScore(DiceSet dice) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        private Integer chanceScore(DiceSet dice) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
     }
 
     private Upper upper;
