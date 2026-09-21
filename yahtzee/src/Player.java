@@ -58,11 +58,12 @@ public class Player {
         dice.reset();
         dice.roll();
 
+        System.out.println(this);
+
         boolean finished = false;
         while (!finished) {
-            System.out.println(this);
-            System.out.println(dice);
-            System.out.println("Rolls used: " + dice.getRolls());
+            System.out.println("Current Roll\n\t" + dice);
+            System.out.println("Rolls used: " + dice.getRolls() + "\n");
 
             String action = chooseAction(dice.getRolls());
             switch (action) {
@@ -74,6 +75,7 @@ public class Player {
                 default -> throw new UnknownError();
             }
         }
+        System.out.println("Turn Completed\n");
     }
 
 
@@ -126,7 +128,8 @@ public class Player {
      *     the shared dice set
      */
     private void holdDie(DiceSet dice) {
-        int choice = chooseDie("Choose a die to hold");
+        int choice =
+            chooseDie("Current Dice\n\t" + dice + "\nChoose a die to hold");
         dice.hold(choice - 1);
     }
 
@@ -138,7 +141,8 @@ public class Player {
      *     the shared dice set
      */
     private void releaseDie(DiceSet dice) {
-        int choice = chooseDie("Choose a die to release");
+        int choice =
+            chooseDie("Current Dice\n\t" + dice + "\nChoose a die to release");
         dice.release(choice - 1);
     }
 
@@ -212,25 +216,25 @@ public class Player {
      */
     private Board.Section chooseSection(String prompt, DiceSet dice) {
         List<Board.Section> available = board.getAvailableSections();
-        List<Board.Section> scoreable = available;
-
-        if (dice != null) {
-            scoreable = dice.getValidSections();
-        }
+        List<Board.Section> valid = available;
 
         if (available == null || available.isEmpty()) {
             return null;
         }
 
+        if (dice != null) {
+            valid = dice.getValidSections();
+        }
+
+        List<Board.Section> scoreable =
+            available.stream().filter(valid::contains).toList();
+
         List<String> options = new ArrayList<>();
-        for (Board.Section section : available) {
-            if (!scoreable.contains(section)) {
-                continue; // don't add
-            }
+        for (Board.Section section : scoreable) {
             options.add(section.toString());
         }
 
         int choice = new Input.Option(prompt, options).get();
-        return available.get(choice - 1);
+        return scoreable.get(choice - 1);
     }
 }

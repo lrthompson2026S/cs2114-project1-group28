@@ -169,7 +169,7 @@ public class Board {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(upper + "\n" + lower + "\n");
+        StringBuilder result = new StringBuilder(upper + "\n" + lower + "\n\n");
 
         result.repeat("-", 25).append('\n');
         result.append(String.format("%-20s %d\n", "Grand Total", totalScore()));
