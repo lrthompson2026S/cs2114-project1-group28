@@ -120,33 +120,23 @@ public class Board {
 
             List<Upper.Section> scoreable = dice.getValidSections().stream()
                 .filter(sect -> sect instanceof Upper.Section)
-                .map(sect -> (Upper.Section) sect);
+                .map(sect -> (Upper.Section) sect).toList();
+
+            if(!scoreable.contains(section)) { return false; }
 
             switch (section) {
-                case Aces ->{
-                    if(!scoreable.contains(Upper.Section.Aces)) {return false;}
+                case Aces ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Aces)).sum());
-                }
-                case Twos ->{
-                    if(!scoreable.contains(Upper.Section.Twos)) {return false;}
+                case Twos ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Twos)).sum());
-                }
-                case Threes ->{
-                    if(!scoreable.contains(Upper.Section.Threes)) {return false;}
+                case Threes ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Threes)).sum());
-                }
-                case Fours ->{
-                    if(!scoreable.contains(Upper.Section.Fours)) {return false;}
+                case Fours ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Fours)).sum());
-                }
-                case Fives ->{
-                    if(!scoreable.contains(Upper.Section.Fives)) {return false;}
+                case Fives ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Fives)).sum());
-                }
-                case Sixes ->{
-                    if(!scoreable.contains(Upper.Section.Sixes)) {return false;}
+                case Sixes ->
                     sections.put(section, IntStream.of(dice.getScoringValues(Upper.Section.Sixes)).sum());
-                }
             }
 
             return true;
@@ -314,37 +304,25 @@ public class Board {
 
             List<Lower.Section> scoreable = dice.getValidSections().stream()
                 .filter(sect -> sect instanceof Lower.Section)
-                .map(sect -> (Lower.Section) sect);
+                .map(sect -> (Lower.Section) sect).toList();
+
+            if(!scoreable.contains(section)) { return false; }
 
             switch (section) {
-                case ThreeOfKind ->{
-                    if(!scoreable.contains(Lower.Section.ThreeOfKind)) {return false;}
+                case ThreeOfKind ->
                     sections.put(section, threeOfKindScore(dice));
-                }
-                case FourOfKind ->{
-                    if(!scoreable.contains(Lower.Section.FourOfKind)) {return false;}
+                case FourOfKind ->
                     sections.put(section, fourOfKindScore(dice));
-                }
-                case FullHouse ->{
-                    if(!scoreable.contains(Lower.Section.FullHouse)) {return false;}
+                case FullHouse ->
                     sections.put(section, fullHouseScore(dice));
-                }
-                case SmallStraight ->{
-                    if(!scoreable.contains(Lower.Section.SmallStraight)) {return false;}
+                case SmallStraight ->
                     sections.put(section, smallStraightScore(dice));
-                }
-                case LargeStraight ->{
-                    if(!scoreable.contains(Lower.Section.LargeStraight)) {return false;}
+                case LargeStraight ->
                     sections.put(section, largeStraightScore(dice));
-                }
-                case Yahtzee ->{
-                    if(!scoreable.contains(Lower.Section.Yahtzee)) {return false;}
+                case Yahtzee ->
                     sections.put(section, yahtzeeScore(dice));
-                }
-                case Chance ->{
-                    if(!scoreable.contains(Lower.Section.Chance)) {return false;}
+                case Chance ->
                     sections.put(section, chanceScore(dice));
-                }
             }
 
             return true;
@@ -426,26 +404,23 @@ public class Board {
         }
 
         private Integer fullHouseScore(DiceSet dice) {
-            if (dice.getScoringValues(Lower.Section.FullHouse).length == 0) {
-                return 0;
-            }
-            return IntStream.of(dice.getScoringValues(Lower.Section.FullHouse)).sum();
+            return 25;
         }
 
         private Integer smallStraightScore(DiceSet dice) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return 30;
         }
 
         private Integer largeStraightScore(DiceSet dice) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return 40;
         }
 
         private Integer yahtzeeScore(DiceSet dice) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return 50;
         }
 
         private Integer chanceScore(DiceSet dice) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            return IntStream.of(dice.getScoringValues(Lower.Section.Chance)).sum();
         }
 
     }
