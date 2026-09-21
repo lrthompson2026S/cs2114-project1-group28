@@ -55,7 +55,22 @@ public class Board {
             Threes,
             Fours,
             Fives,
-            Sixes
+            Sixes;
+
+            @Override
+            public String toString()
+            {
+                switch (this)
+                {
+                    case Aces -> {return "Aces";}
+                    case Twos -> {return "Twos";}
+                    case Threes -> {return "Threes";}
+                    case Fours -> {return "Fours";}
+                    case Fives -> {return "Fives";}
+                    case Sixes -> {return "Sixes";}
+                    default -> throw new UnknownError();
+                }
+            }
         }
 
         /**
@@ -293,7 +308,33 @@ public class Board {
          */
         @Override
         public String toString() {
-            return "";
+            StringBuilder result = new StringBuilder();
+
+            result.append("Upper Section\n");
+
+            for (Upper.Section section : Upper.Section.values()) {
+                Integer score = sections.get(section);
+
+                result.append(
+                    String.format(
+                        "%-20s %s\n",
+                        section,
+                        scoreString(score)));
+            }
+
+            result.append(
+                String.format(
+                    "%-20s %d\n",
+                    "Upper Total",
+                    totalScore()));
+
+            result.append(
+                String.format(
+                    "%-20s %d",
+                    "Bonus",
+                    bonus()));
+
+            return result.toString();
         }
     }
 
@@ -325,7 +366,24 @@ public class Board {
             SmallStraight,
             LargeStraight,
             Yahtzee,
-            Chance
+            Chance;
+
+
+            @Override
+            public String toString()
+            {
+                switch (this)
+                {
+                    case ThreeOfKind -> {return "Three of a Kind";}
+                    case FourOfKind -> {return "Four of a Kind";}
+                    case FullHouse -> {return "Full House";}
+                    case SmallStraight -> {return "Small Straight";}
+                    case LargeStraight -> {return "Large Straight";}
+                    case Yahtzee -> {return "Yahtzee";}
+                    case Chance -> {return "Chance"; }
+                    default -> throw new UnknownError();
+                }
+            }
         }
 
         /**
@@ -527,7 +585,27 @@ public class Board {
          */
         @Override
         public String toString() {
-            return "";
+            StringBuilder result = new StringBuilder();
+
+            result.append("Lower Section\n");
+
+            for (Lower.Section section : Lower.Section.values()) {
+                Integer score = sections.get(section);
+
+                result.append(
+                    String.format(
+                        "%-20s %s\n",
+                        section,
+                        scoreString(score)));
+            }
+
+            result.append(
+                String.format(
+                    "%-20s %d",
+                    "Lower Total",
+                    totalScore()));
+
+            return result.toString();
         }
 
         /**
@@ -767,7 +845,7 @@ public class Board {
      */
     @Override
     public String toString() {
-        return "";
+        return upper + "\n" + lower;
     }
 
     /**
@@ -795,5 +873,17 @@ public class Board {
      */
     public boolean isComplete() {
         return getAvailableSections().isEmpty();
+    }
+
+    private static String scoreString(Integer score) {
+        if (score == null) {
+            return "__";
+        }
+
+        if (score == 0) {
+            return "X";
+        }
+
+        return score.toString();
     }
 }
