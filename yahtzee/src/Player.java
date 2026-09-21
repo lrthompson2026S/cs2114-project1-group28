@@ -22,12 +22,12 @@ public class Player {
     /**
      * This player's display name.
      */
-    private String name;
+    private final String name;
 
     /**
      * This player's scorecard.
      */
-    private Board board;
+    private final Board board;
 
     /**
      * Creates a player with the given name and an empty scorecard.
@@ -58,21 +58,18 @@ public class Player {
 
         boolean finished = false;
         while (!finished) {
-            System.out.println(toString());
+            System.out.println(this);
             System.out.println(dice);
             System.out.println("Rolls used: " + dice.getRolls());
 
             String action = chooseAction(dice.getRolls());
-            if (action.equals("Hold")) {
-                holdDie(dice);
-            } else if (action.equals("Release")) {
-                releaseDie(dice);
-            } else if (action.equals("Roll")) {
-                dice.roll();
-            } else if (action.equals("Score")) {
-                finished = tryScore(dice);
-            } else if (action.equals("Scratch")) {
-                finished = tryScratch();
+            switch (action) {
+                case "Hold" -> holdDie(dice);
+                case "Release" -> releaseDie(dice);
+                case "Roll" -> dice.roll();
+                case "Score" -> finished = tryScore(dice);
+                case "Scratch" -> finished = tryScratch();
+                default -> throw new UnknownError();
             }
         }
     }
@@ -93,7 +90,7 @@ public class Player {
      */
     @Override
     public String toString() {
-        return name + "\n" + board.toString();
+        return name + "\n" + board;
     }
 
     /**
@@ -167,7 +164,7 @@ public class Player {
         if (section == null) {
             return false;
         }
-        if (!board.score(section, dice)) {
+        if (!board.scoreSection(section, dice)) {
             System.out.println(
                 "That section cannot be scored with the current dice.");
             return false;
