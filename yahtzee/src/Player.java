@@ -58,7 +58,7 @@ public class Player {
         dice.reset();
         dice.roll();
 
-        System.out.println(this);
+        System.out.println("\nCurrent Player:\n\t" + this);
 
         boolean finished = false;
         while (!finished) {

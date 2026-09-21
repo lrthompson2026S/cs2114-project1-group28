@@ -64,13 +64,23 @@ public class Yahtzee {
 
 
     /**
-     * Collects setup information for a new game, creates the player, and
+     * Collects setup information for a new game, creates the player(s), and
      * prepares the shared dice set.
      */
     private void gameSetup() {
         players.clear();
-        String name = new Input.String("Enter player name").get();
-        players.add(new Player(name));
+
+        int playerCount = new Input.Option("Choose number of players",
+            Arrays.asList("1 Player", "2 Players", "3 Players", "4 Players",
+                "5 Players", "6 Players", "7 Players", "8 Players")).get();
+
+        for (int i = 0; i < playerCount; i++) {
+            String name =
+                new Input.String("Enter player " + (i + 1) + " name").get();
+
+            players.add(new Player(name));
+        }
+
         dice.reset();
     }
 
