@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Controls the overall Yahtzee program flow, including the main menu, game
@@ -27,7 +28,7 @@ public class Yahtzee {
      */
     public Yahtzee() {
         this.players = new ArrayList<>();
-        this.dice = new DiceSet();
+        this.dice = new DiceSet(new Random());
     }
 
 

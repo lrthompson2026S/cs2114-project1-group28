@@ -480,6 +480,7 @@ public class BoardTest extends TestCase {
          *     values contributing to its score
          */
         public TestDiceSet(Board.Section section, int... values) {
+            super(null);
 
             validSection = section;
             scoringValues = values.clone();
