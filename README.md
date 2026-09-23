@@ -33,6 +33,10 @@ Compile the source files with `student.jar` included on the classpath, then run 
 JUnit tests are included for the major classes and cover normal behavior, edge cases, and invalid input where
 applicable.
 
+Note that student.TestCase uses the deprecate SecurityManager. Use of the compile command may be required.
+ ```-Djava.security.manager=allow```
+The command may vary per IDE/System
+
 ## System Diagram
 
 It should be noted that some changes from the original spec and system diagram have not yet been reflected.
