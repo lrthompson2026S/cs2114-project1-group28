@@ -3,8 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Controls the overall Yahtzee program flow, including the main menu,
- * game setup, the shared dice set, and the player list.
+ * Controls the overall Yahtzee program flow, including the main menu, game
+ * setup, the shared dice set, and the player list.
  *
  * @author Kaustubh Pasumarthi
  * @version 2026.09.21.1
@@ -20,19 +20,21 @@ public class Yahtzee {
      */
     private DiceSet dice;
 
+
     /**
-     * Creates a new Yahtzee game with an empty player list and a shared
-     * dice set.
+     * Creates a new Yahtzee game with an empty player list and a shared dice
+     * set.
      */
     public Yahtzee() {
         this.players = new ArrayList<>();
         this.dice = new DiceSet();
     }
 
+
     /**
      * Starts the program and runs the top-level loop until the user quits.
-     * Choosing play runs setup, the game loop, and the final score
-     * display; choosing quit ends the program.
+     * Choosing play runs setup, the game loop, and the final score display;
+     * choosing quit ends the program.
      */
     public void start() {
         boolean running = true;
@@ -42,11 +44,13 @@ public class Yahtzee {
                 gameSetup();
                 gameLoop();
                 displayResults();
-            } else {
+            }
+            else {
                 running = false;
             }
         }
     }
+
 
     /**
      * Displays the main menu options and reads the user's selection.
@@ -55,23 +59,35 @@ public class Yahtzee {
      */
     private int mainMenu() {
         List<String> options = Arrays.asList("Play", "Quit");
-        return new OptionInput("Choose an option", options).get();
+        return new Input.Option("Welcome", options).get();
     }
 
+
     /**
-     * Collects setup information for a new game, creates the player, and
+     * Collects setup information for a new game, creates the player(s), and
      * prepares the shared dice set.
      */
     private void gameSetup() {
         players.clear();
-        String name = new StringInput("Enter player name").get();
-        players.add(new Player(name));
+
+        int playerCount = new Input.Option("Choose number of players",
+            Arrays.asList("1 Player", "2 Players", "3 Players", "4 Players",
+                "5 Players", "6 Players", "7 Players", "8 Players")).get();
+
+        for (int i = 0; i < playerCount; i++) {
+            String name =
+                new Input.String("Enter player " + (i + 1) + " name").get();
+
+            players.add(new Player(name));
+        }
+
         dice.reset();
     }
 
+
     /**
-     * Gives each player a turn with the shared dice set until every
-     * player's board is complete.
+     * Gives each player a turn with the shared dice set until every player's
+     * board is complete.
      */
     private void gameLoop() {
         if (players.isEmpty()) {
@@ -86,21 +102,23 @@ public class Yahtzee {
         }
     }
 
+
     /**
      * Prints each player's final scorecard after the game ends.
      */
     private void displayResults() {
-        System.out.println("Game over");
+        System.out.println("Game over!");
         for (Player player : players) {
             System.out.println(player);
         }
     }
 
+
     /**
      * Checks whether the current game has finished.
      *
-     * @return true if the player list is not empty and every player's
-     *         board is complete; false otherwise
+     * @return true if the player list is not empty and every player's board is
+     *     complete; false otherwise
      */
     private boolean gameComplete() {
         if (players.isEmpty()) {

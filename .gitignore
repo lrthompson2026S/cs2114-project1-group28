@@ -1,3 +1,7 @@
 .vscode/
 .idea/
 bin/
+out/
+.project
+.classpath
+*.class
