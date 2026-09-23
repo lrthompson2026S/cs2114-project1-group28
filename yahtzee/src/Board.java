@@ -20,13 +20,13 @@ public class Board {
      *
      * @since 09.21.2026
      */
-    private Upper upper;
+    private final Upper upper;
     /**
      * The lower section of the board.
      *
      * @since 09.21.2026
      */
-    private Lower lower;
+    private final Lower lower;
 
 
     /**
@@ -169,13 +169,7 @@ public class Board {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(upper + "\n" + lower + "\n\n");
-
-        result.repeat("-", 25).append('\n');
-        result.append(String.format("%-20s %d\n", "Grand Total", totalScore()));
-        result.repeat("-", 25).append('\n');
-
-        return result.toString();
+        return upper + "\n" + lower;
     }
 
 
@@ -222,306 +216,6 @@ public class Board {
 
     /**
      * <p>
-     * Upper <br> Represents the upper section of the Yahtzee board.
-     * </p>
-     *
-     * @author Lucas Thompson (lrthompson@vt.edu)
-     * @version 09.21.2026
-     * @since 09.16.2026
-     */
-    public class Upper {
-
-        /**
-         * The score threshold required to receive the upper section bonus.
-         *
-         * @since 09.21.2026
-         */
-        private static final int BONUS_THRESHHOLD = 3 * (1 + 2 + 3 + 4 + 5 + 6);
-        /**
-         * The value of the upper section bonus.
-         *
-         * @since 09.21.2026
-         */
-        private static final int BONUS_VALUE = 35;
-        /**
-         * <p>
-         * Represents the board eg. <br> null -> not scored -> __ <br> number ->
-         * scored with that number -> number <br> 0 -> scratched -> X <br>
-         * </p>
-         *
-         * @since 09.16.2026
-         */
-        private Map<Upper.Section, Integer> sections;
-
-
-        /**
-         * Creates a new Upper section.
-         *
-         * @since 09.16.2026
-         */
-        public Upper() {
-            sections = new LinkedHashMap<>();
-
-            for (Upper.Section section : Upper.Section.values()) {
-                sections.put(section, null);
-            }
-        }
-
-
-        /**
-         * <p>
-         * Checks if a section has been scored.
-         * </p>
-         *
-         * @param section
-         *     the section to check
-         * @return true if the section has been scored, false otherwise
-         * @throws IllegalArgumentException
-         *     if the section is invalid
-         * @since 09.16.2026
-         */
-        public boolean isScored(Upper.Section section)
-            throws IllegalArgumentException {
-
-            if (!sections.containsKey(section)) {
-                throw new IllegalArgumentException(
-                    "Invalid section: " + section);
-            }
-
-            return sections.get(section) != null;
-        }
-
-
-        /**
-         * <p>
-         * Scores a section based on the dice roll.
-         * </p>
-         *
-         * @param section
-         *     the section to score
-         * @param dice
-         *     the current dice state
-         * @return true if the section was scored, false otherwise
-         * @throws IllegalArgumentException
-         *     if the section is invalid
-         * @since 09.21.2026
-         */
-        public boolean scoreSection(Upper.Section section, DiceSet dice)
-            throws IllegalArgumentException {
-
-            if (!sections.containsKey(section)) {
-                throw new IllegalArgumentException(
-                    "Invalid section: " + section);
-            }
-
-            if (sections.get(section) != null) {
-                return false;
-            }
-
-            List<Upper.Section> scoreable = dice.getValidSections().stream()
-                .filter(sect -> sect instanceof Upper.Section)
-                .map(sect -> (Upper.Section)sect).toList();
-
-            if (!scoreable.contains(section)) {
-                return false;
-            }
-
-            switch (section) {
-                case Aces -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Aces))
-                        .sum());
-
-                case Twos -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Twos))
-                        .sum());
-
-                case Threes -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Threes))
-                        .sum());
-
-                case Fours -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Fours))
-                        .sum());
-
-                case Fives -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Fives))
-                        .sum());
-
-                case Sixes -> sections.put(section,
-                    IntStream.of(dice.getScoringValues(Upper.Section.Sixes))
-                        .sum());
-            }
-
-            return true;
-        }
-
-
-        /**
-         * <p>
-         * Calculates the total score for the upper section.
-         * </p>
-         *
-         * @return the total score
-         * @since 09.16.2026
-         */
-        public int totalScore() {
-            int sum = 0;
-
-            for (Integer value : sections.values()) {
-                if (value != null) {
-                    sum += value;
-                }
-            }
-
-            return sum;
-        }
-
-
-        /**
-         * <p>
-         * Calculates the bonus for the upper section.
-         * </p>
-         *
-         * @return the bonus value if the bonus threshold is reached, otherwise
-         *     0
-         * @since 09.21.2026
-         */
-        public int bonus() {
-            return this.totalScore() > BONUS_THRESHHOLD ? BONUS_VALUE : 0;
-        }
-
-
-        /**
-         * <p>
-         * Gets a list of available sections that have not been scored yet.
-         * </p>
-         *
-         * @return a list of available sections
-         * @since 09.16.2026
-         */
-        public List<Upper.Section> getAvailableSections() {
-            List<Upper.Section> availableSections = new ArrayList<>();
-
-            for (Map.Entry<Upper.Section, Integer> entry : sections.entrySet()) {
-
-                if (entry.getValue() == null) {
-                    // a section is available if unscored (null)
-                    availableSections.add(entry.getKey());
-                }
-            }
-
-            return availableSections;
-        }
-
-
-        /**
-         * <p>
-         * Attempts to scratch a section.
-         * </p>
-         *
-         * @param section
-         *     the section to scratch
-         * @return true if the section was scratched, false otherwise
-         * @throws IllegalArgumentException
-         *     if the section is invalid
-         * @since 09.16.2026
-         */
-        public boolean scratch(Upper.Section section) {
-            if (!sections.containsKey(section)) {
-                throw new IllegalArgumentException(
-                    "Invalid section: " + section);
-            }
-
-            if (sections.get(section) != null) {
-                return false;
-            }
-
-            sections.put(section, 0);
-            return true;
-        }
-
-
-        /**
-         * <p>
-         * Returns a string representation of the upper section.
-         * </p>
-         *
-         * @return a string representation of the upper section
-         * @since 09.21.2026
-         */
-        @Override
-        public String toString() {
-            StringBuilder result = new StringBuilder();
-
-            result.repeat("-", 25).append('\n');
-            result.append("Upper Section\n");
-
-            for (Upper.Section section : Upper.Section.values()) {
-                Integer score = sections.get(section);
-
-                result.repeat("-", 25).append('\n');
-                result.append(
-                    String.format("%-20s %s\n", section, scoreString(score)));
-            }
-
-            result.repeat("-", 25).append('\n');
-            result.append(String.format("%-20s %d\n", "Total", totalScore()));
-
-            result.repeat("-", 25).append('\n');
-            result.append(String.format("%-20s %d\n", "Bonus", bonus()));
-
-            result.repeat("-", 25).append('\n');
-            result.append(String.format("%-20s %d\n", "Upper Total",
-                totalScore() + bonus()));
-
-            return result.toString();
-        }
-
-
-        /**
-         * <p>
-         * Section <br> Represents a section of the upper board.
-         * </p>
-         *
-         * @author Lucas Thompson (lrthompson@vt.edu)
-         * @since 09.16.2026
-         */
-        public enum Section implements Board.Section {
-            Aces, Twos, Threes, Fours, Fives, Sixes;
-
-
-            @Override
-            public String toString() {
-                switch (this) {
-                    case Aces -> {
-                        return "Aces";
-                    }
-                    case Twos -> {
-                        return "Twos";
-                    }
-                    case Threes -> {
-                        return "Threes";
-                    }
-                    case Fours -> {
-                        return "Fours";
-                    }
-                    case Fives -> {
-                        return "Fives";
-                    }
-                    case Sixes -> {
-                        return "Sixes";
-                    }
-                    default -> throw new UnknownError();
-                }
-            }
-        }
-    }
-
-
-
-
-    /**
-     * <p>
      * Lower <br> Represents the lower section of the Yahtzee board.
      * </p>
      *
@@ -529,7 +223,7 @@ public class Board {
      * @version 09.21.2026
      * @since 09.16.2026
      */
-    public class Lower {
+    public static class Lower {
 
         /**
          * <p>
@@ -539,7 +233,7 @@ public class Board {
          *
          * @since 09.16.2026
          */
-        private Map<Lower.Section, Integer> sections;
+        private final Map<Lower.Section, Integer> sections;
 
 
         /**
@@ -720,18 +414,15 @@ public class Board {
         public String toString() {
             StringBuilder result = new StringBuilder();
 
-            result.repeat("-", 25).append('\n');
             result.append("Lower Section\n");
 
             for (Lower.Section section : Lower.Section.values()) {
                 Integer score = sections.get(section);
 
-                result.repeat("-", 25).append('\n');
                 result.append(
                     String.format("%-20s %s\n", section, scoreString(score)));
             }
 
-            result.repeat("-", 25).append('\n');
             result.append(
                 String.format("%-20s %d", "Lower Total", totalScore()));
 
@@ -867,30 +558,295 @@ public class Board {
 
             @Override
             public String toString() {
-                switch (this) {
-                    case ThreeOfKind -> {
-                        return "Three of a Kind";
-                    }
-                    case FourOfKind -> {
-                        return "Four of a Kind";
-                    }
-                    case FullHouse -> {
-                        return "Full House";
-                    }
-                    case SmallStraight -> {
-                        return "Small Straight";
-                    }
-                    case LargeStraight -> {
-                        return "Large Straight";
-                    }
-                    case Yahtzee -> {
-                        return "Yahtzee";
-                    }
-                    case Chance -> {
-                        return "Chance";
-                    }
-                    default -> throw new UnknownError();
+                return switch (this) {
+                    case ThreeOfKind -> "Three of a Kind";
+                    case FourOfKind -> "Four of a Kind";
+                    case FullHouse -> "Full House";
+                    case SmallStraight -> "Small Straight";
+                    case LargeStraight -> "Large Straight";
+                    case Yahtzee -> "Yahtzee";
+                    case Chance -> "Chance";
+                };
+            }
+        }
+    }
+
+
+
+
+    /**
+     * <p>
+     * Upper <br> Represents the upper section of the Yahtzee board.
+     * </p>
+     *
+     * @author Lucas Thompson (lrthompson@vt.edu)
+     * @version 09.21.2026
+     * @since 09.16.2026
+     */
+    public static class Upper {
+
+        /**
+         * The score threshold required to receive the upper section bonus.
+         *
+         * @since 09.21.2026
+         */
+        private static final int BONUS_THRESHHOLD = 3 * (1 + 2 + 3 + 4 + 5 + 6);
+        /**
+         * The value of the upper section bonus.
+         *
+         * @since 09.21.2026
+         */
+        private static final int BONUS_VALUE = 35;
+        /**
+         * <p>
+         * Represents the board eg. <br> null -> not scored -> __ <br> number ->
+         * scored with that number -> number <br> 0 -> scratched -> X <br>
+         * </p>
+         *
+         * @since 09.16.2026
+         */
+        private final Map<Upper.Section, Integer> sections;
+
+
+        /**
+         * Creates a new Upper section.
+         *
+         * @since 09.16.2026
+         */
+        public Upper() {
+            sections = new LinkedHashMap<>();
+
+            for (Upper.Section section : Upper.Section.values()) {
+                sections.put(section, null);
+            }
+        }
+
+
+        /**
+         * <p>
+         * Checks if a section has been scored.
+         * </p>
+         *
+         * @param section
+         *     the section to check
+         * @return true if the section has been scored, false otherwise
+         * @throws IllegalArgumentException
+         *     if the section is invalid
+         * @since 09.16.2026
+         */
+        public boolean isScored(Upper.Section section)
+            throws IllegalArgumentException {
+
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException(
+                    "Invalid section: " + section);
+            }
+
+            return sections.get(section) != null;
+        }
+
+
+        /**
+         * <p>
+         * Scores a section based on the dice roll.
+         * </p>
+         *
+         * @param section
+         *     the section to score
+         * @param dice
+         *     the current dice state
+         * @return true if the section was scored, false otherwise
+         * @throws IllegalArgumentException
+         *     if the section is invalid
+         * @since 09.21.2026
+         */
+        public boolean scoreSection(Upper.Section section, DiceSet dice)
+            throws IllegalArgumentException {
+
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException(
+                    "Invalid section: " + section);
+            }
+
+            if (sections.get(section) != null) {
+                return false;
+            }
+
+            List<Upper.Section> scoreable = dice.getValidSections().stream()
+                .filter(sect -> sect instanceof Upper.Section)
+                .map(sect -> (Upper.Section)sect).toList();
+
+            if (!scoreable.contains(section)) {
+                return false;
+            }
+
+            switch (section) {
+                case Aces -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Aces))
+                        .sum());
+
+                case Twos -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Twos))
+                        .sum());
+
+                case Threes -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Threes))
+                        .sum());
+
+                case Fours -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Fours))
+                        .sum());
+
+                case Fives -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Fives))
+                        .sum());
+
+                case Sixes -> sections.put(section,
+                    IntStream.of(dice.getScoringValues(Upper.Section.Sixes))
+                        .sum());
+            }
+
+            return true;
+        }
+
+
+        /**
+         * <p>
+         * Calculates the total score for the upper section.
+         * </p>
+         *
+         * @return the total score
+         * @since 09.16.2026
+         */
+        public int totalScore() {
+            int sum = 0;
+
+            for (Integer value : sections.values()) {
+                if (value != null) {
+                    sum += value;
                 }
+            }
+
+            return sum;
+        }
+
+
+        /**
+         * <p>
+         * Calculates the bonus for the upper section.
+         * </p>
+         *
+         * @return the bonus value if the bonus threshold is reached, otherwise
+         *     0
+         * @since 09.21.2026
+         */
+        public int bonus() {
+            return this.totalScore() >= BONUS_THRESHHOLD ? BONUS_VALUE : 0;
+        }
+
+
+        /**
+         * <p>
+         * Gets a list of available sections that have not been scored yet.
+         * </p>
+         *
+         * @return a list of available sections
+         * @since 09.16.2026
+         */
+        public List<Upper.Section> getAvailableSections() {
+            List<Upper.Section> availableSections = new ArrayList<>();
+
+            for (Map.Entry<Upper.Section, Integer> entry : sections.entrySet()) {
+
+                if (entry.getValue() == null) {
+                    // a section is available if unscored (null)
+                    availableSections.add(entry.getKey());
+                }
+            }
+
+            return availableSections;
+        }
+
+
+        /**
+         * <p>
+         * Attempts to scratch a section.
+         * </p>
+         *
+         * @param section
+         *     the section to scratch
+         * @return true if the section was scratched, false otherwise
+         * @throws IllegalArgumentException
+         *     if the section is invalid
+         * @since 09.16.2026
+         */
+        public boolean scratch(Upper.Section section) {
+            if (!sections.containsKey(section)) {
+                throw new IllegalArgumentException(
+                    "Invalid section: " + section);
+            }
+
+            if (sections.get(section) != null) {
+                return false;
+            }
+
+            sections.put(section, 0);
+            return true;
+        }
+
+
+        /**
+         * <p>
+         * Returns a string representation of the upper section.
+         * </p>
+         *
+         * @return a string representation of the upper section
+         * @since 09.21.2026
+         */
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+
+            result.append("Upper Section\n");
+
+            for (Upper.Section section : Upper.Section.values()) {
+                Integer score = sections.get(section);
+
+                result.append(
+                    String.format("%-20s %s\n", section, scoreString(score)));
+            }
+
+            result.append(
+                String.format("%-20s %d\n", "Upper Total", totalScore()));
+
+            result.append(String.format("%-20s %d", "Bonus", bonus()));
+
+            return result.toString();
+        }
+
+
+        /**
+         * <p>
+         * Section <br> Represents a section of the upper board.
+         * </p>
+         *
+         * @author Lucas Thompson (lrthompson@vt.edu)
+         * @since 09.16.2026
+         */
+        public enum Section implements Board.Section {
+            Aces, Twos, Threes, Fours, Fives, Sixes;
+
+
+            @Override
+            public String toString() {
+                return switch (this) {
+                    case Aces -> "Aces";
+                    case Twos -> "Twos";
+                    case Threes -> "Threes";
+                    case Fours -> "Fours";
+                    case Fives -> "Fives";
+                    case Sixes -> "Sixes";
+                };
             }
         }
     }
