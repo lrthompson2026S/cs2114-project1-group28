@@ -169,7 +169,13 @@ public class Board {
      */
     @Override
     public String toString() {
-        return upper + "\n" + lower;
+        StringBuilder result = new StringBuilder(upper + "\n" + lower + "\n");
+
+        result.repeat('-', 25).append('\n');
+        result.append(String.format("%-20s %d\n", "Grand Total", totalScore()));
+        result.repeat('-', 25);
+
+        return result.toString();
     }
 
 
@@ -414,17 +420,21 @@ public class Board {
         public String toString() {
             StringBuilder result = new StringBuilder();
 
+            result.repeat('-', 25).append('\n');
             result.append("Lower Section\n");
 
             for (Lower.Section section : Lower.Section.values()) {
                 Integer score = sections.get(section);
 
+                result.repeat('-', 25).append('\n');
                 result.append(
                     String.format("%-20s %s\n", section, scoreString(score)));
             }
 
+            result.repeat('-', 25).append('\n');
             result.append(
-                String.format("%-20s %d", "Lower Total", totalScore()));
+                String.format("%-20s %d\n", "Lower Total", totalScore()));
+            result.repeat('-', 25);
 
             return result.toString();
         }
@@ -807,19 +817,28 @@ public class Board {
         public String toString() {
             StringBuilder result = new StringBuilder();
 
+            result.repeat('-', 25).append('\n');
             result.append("Upper Section\n");
 
             for (Upper.Section section : Upper.Section.values()) {
                 Integer score = sections.get(section);
 
+                result.repeat('-', 25).append('\n');
                 result.append(
                     String.format("%-20s %s\n", section, scoreString(score)));
             }
 
+            result.repeat('-', 25).append('\n');
             result.append(
-                String.format("%-20s %d\n", "Upper Total", totalScore()));
+                String.format("%-20s %d\n", "Upper Subtotal", totalScore()));
 
-            result.append(String.format("%-20s %d", "Bonus", bonus()));
+            result.repeat('-', 25).append('\n');
+            result.append(String.format("%-20s %d\n", "Bonus", bonus()));
+
+            result.repeat('-', 25).append('\n');
+            result.append(String.format("%-20s %d\n", "Upper Total",
+                totalScore() + bonus()));
+            result.repeat('-', 25);
 
             return result.toString();
         }
