@@ -38,3 +38,7 @@ applicable.
 It should be noted that some changes from the original spec and system diagram have not yet been reflected.
 
 [System Diagram](https://lucid.app/lucidchart/6054c0dc-3b4f-4cbe-8c5a-cde50b433e01/edit?invitationId=inv_9c13f777-e6d7-4844-89d1-8cf73fad4352&page=0_0#)
+
+## Presentation
+
+[Google Slides](https://docs.google.com/presentation/d/1d6sACB22j2vwYOw-HOYszOoYHvW4cNccwfus8-rB0eo/edit?usp=sharing)
