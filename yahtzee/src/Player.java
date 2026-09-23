@@ -5,8 +5,8 @@ import java.util.List;
  * Represents one player as a name plus a scorecard, and runs that player's turn
  * with the shared dice set.
  *
- * @author Kaustubh Pasumarthi
- * @version 2026.09.21.1
+ * @author Kaustubh Pasumarthi, Lucas Thompson
+ * @version 2026.09.23.1
  */
 public class Player {
     /**
@@ -71,10 +71,10 @@ public class Player {
                 case "Release" -> releaseDie(dice);
                 case "Roll" -> dice.roll();
                 case "Score" -> finished = tryScore(dice);
-                case "Scratch" -> finished = tryScratch();
                 default -> throw new UnknownError();
             }
         }
+
         System.out.println("Turn Completed\n");
     }
 
@@ -109,13 +109,15 @@ public class Player {
      */
     private String chooseAction(int rollsUsed) {
         List<String> options = new ArrayList<>();
+
         if (rollsUsed < MAX_ROLLS) {
             options.add("Hold");
             options.add("Release");
             options.add("Roll");
         }
+
         options.add("Score");
-        options.add("Scratch");
+
         int choice = new Input.Option("Choose an action", options).get();
         return options.get(choice - 1);
     }
@@ -130,6 +132,7 @@ public class Player {
     private void holdDie(DiceSet dice) {
         int choice =
             chooseDie("Current Dice\n\t" + dice + "\nChoose a die to hold");
+
         dice.hold(choice - 1);
     }
 
@@ -143,6 +146,7 @@ public class Player {
     private void releaseDie(DiceSet dice) {
         int choice =
             chooseDie("Current Dice\n\t" + dice + "\nChoose a die to release");
+
         dice.release(choice - 1);
     }
 
@@ -157,32 +161,58 @@ public class Player {
      */
     private int chooseDie(String prompt) {
         List<String> options = new ArrayList<>();
+
         for (int i = 1; i <= NUM_DICE; i++) {
             options.add("Die " + i);
         }
+
         return new Input.Option(prompt, options).get();
     }
 
 
     /**
-     * Attempts to score one available section with the current dice. A failed
-     * attempt does not end the turn.
+     * Allows the player to score one valid unused section or choose to scratch
+     * any unused section.
      *
      * @param dice
      *     the shared dice set
-     * @return true if the section was scored
+     * @return true if a section was scored or scratched
      */
     private boolean tryScore(DiceSet dice) {
-        Board.Section section =
-            chooseSection("Choose a section to score", dice);
-        if (section == null) {
+        List<Board.Section> available = board.getAvailableSections();
+
+        if (available == null || available.isEmpty()) {
             return false;
         }
+
+        List<Board.Section> valid = dice.getValidSections();
+
+        List<Board.Section> scoreable =
+            available.stream().filter(valid::contains).toList();
+
+        List<String> options = new ArrayList<>();
+
+        for (Board.Section section : scoreable) {
+            options.add(section.toString());
+        }
+
+        options.add("Scratch");
+
+        int choice =
+            new Input.Option("Choose a section to score", options).get();
+
+        if (choice == options.size()) {
+            return tryScratch();
+        }
+
+        Board.Section section = scoreable.get(choice - 1);
+
         if (!board.scoreSection(section, dice)) {
             System.out.println(
                 "That section cannot be scored with the current dice.");
             return false;
         }
+
         return true;
     }
 
@@ -194,15 +224,17 @@ public class Player {
      * @return true if the section was scratched
      */
     private boolean tryScratch() {
-        Board.Section section =
-            chooseSection("Choose a section to scratch", null);
+        Board.Section section = chooseSection("Choose a section to scratch");
+
         if (section == null) {
             return false;
         }
+
         if (!board.scratch(section)) {
             System.out.println("That section cannot be scratched.");
             return false;
         }
+
         return true;
     }
 
@@ -214,27 +246,20 @@ public class Player {
      *     the input prompt
      * @return the chosen section, or null if none are available
      */
-    private Board.Section chooseSection(String prompt, DiceSet dice) {
+    private Board.Section chooseSection(String prompt) {
         List<Board.Section> available = board.getAvailableSections();
-        List<Board.Section> valid = available;
 
         if (available == null || available.isEmpty()) {
             return null;
         }
 
-        if (dice != null) {
-            valid = dice.getValidSections();
-        }
-
-        List<Board.Section> scoreable =
-            available.stream().filter(valid::contains).toList();
-
         List<String> options = new ArrayList<>();
-        for (Board.Section section : scoreable) {
+
+        for (Board.Section section : available) {
             options.add(section.toString());
         }
 
         int choice = new Input.Option(prompt, options).get();
-        return scoreable.get(choice - 1);
+        return available.get(choice - 1);
     }
 }
