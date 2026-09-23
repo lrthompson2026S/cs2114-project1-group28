@@ -1,18 +1,40 @@
-## Getting Started
+# Console Yahtzee
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Console Yahtzee is a Java 17 implementation of the classic Yahtzee dice game created for **CS 2114: Software Design &
+Data Structures — Project 1: Learning to Scope**.
 
-## Folder Structure
+## Features
 
-The workspace contains two folders by default, where:
+* 1–8 players
+* Five dice with hold/release functionality
+* Up to three rolls per turn
+* Standard upper and lower Yahtzee scoring categories
+* Upper-section bonus
+* Score or scratch categories
+* Input validation for invalid user input
+* Full 13-round game with final scores
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+Bonus Yahtzees and Joker rules are not implemented.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## Compile and Run
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+The project requires **Java 17**.
 
-## Dependency Management
+The classpath must include:
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+```text
+yahtzee/lib/student.jar
+```
+
+Compile the source files with `student.jar` included on the classpath, then run the program from `Main`.
+
+## Testing
+
+JUnit tests are included for the major classes and cover normal behavior, edge cases, and invalid input where
+applicable.
+
+## System Diagram
+
+It should be noted that some changes from the original spec and system diagram have not yet been reflected.
+
+[System Diagram](https://lucid.app/lucidchart/6054c0dc-3b4f-4cbe-8c5a-cde50b433e01/edit?invitationId=inv_9c13f777-e6d7-4844-89d1-8cf73fad4352&page=0_0#)
