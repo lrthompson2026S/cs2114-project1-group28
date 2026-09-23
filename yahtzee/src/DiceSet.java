@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Owns the five dice, the current turn's roll count, and analysis of
- * which scoring sections the current roll satisfies.
+ * Owns the five dice, the current turn's roll count, and analysis of which
+ * scoring sections the current roll satisfies.
  *
  * @author Kaustubh Pasumarthi
  * @version 2026.09.21.1
@@ -75,21 +75,23 @@ public class DiceSet {
      */
     private Random random;
 
+
     /**
      * Creates a set of five unrolled dice with a roll count of zero.
      */
-    public DiceSet() {
+    public DiceSet(Random random) {
         this.dice = new Die[NUM_DICE];
         for (int i = 0; i < NUM_DICE; i++) {
             this.dice[i] = new Die();
         }
         this.rolls = 0;
-        this.random = new Random();
+        this.random = random;
     }
 
+
     /**
-     * Rolls every unheld die and increases the roll count by one. Does
-     * nothing if this turn has already used three rolls.
+     * Rolls every unheld die and increases the roll count by one. Does nothing
+     * if this turn has already used three rolls.
      */
     public void roll() {
         if (rolls >= MAX_ROLLS) {
@@ -101,13 +103,14 @@ public class DiceSet {
         rolls++;
     }
 
+
     /**
      * Holds the die at the given index so later rolls skip it.
      *
      * @param index
-     *            the zero-based die index, from 0 through 4
-     * @return true if the index is valid and the die is held; false if
-     *         the index is out of range and nothing changes
+     *     the zero-based die index, from 0 through 4
+     * @return true if the index is valid and the die is held; false if the
+     *     index is out of range and nothing changes
      */
     public boolean hold(int index) {
         if (!isValidIndex(index)) {
@@ -117,13 +120,14 @@ public class DiceSet {
         return true;
     }
 
+
     /**
      * Releases the die at the given index so later rolls can change it.
      *
      * @param index
-     *            the zero-based die index, from 0 through 4
-     * @return true if the index is valid and the die is released; false
-     *         if the index is out of range and nothing changes
+     *     the zero-based die index, from 0 through 4
+     * @return true if the index is valid and the die is released; false if the
+     *     index is out of range and nothing changes
      */
     public boolean release(int index) {
         if (!isValidIndex(index)) {
@@ -132,6 +136,7 @@ public class DiceSet {
         dice[index].release();
         return true;
     }
+
 
     /**
      * Releases all five dice.
@@ -142,9 +147,10 @@ public class DiceSet {
         }
     }
 
+
     /**
-     * Prepares this set for a new turn by clearing the roll count and
-     * releasing every die.
+     * Prepares this set for a new turn by clearing the roll count and releasing
+     * every die.
      */
     public void reset() {
         rolls = 0;
@@ -152,6 +158,7 @@ public class DiceSet {
             dice[i].reset();
         }
     }
+
 
     /**
      * Returns how many rolls have been used in the current turn.
@@ -162,12 +169,13 @@ public class DiceSet {
         return rolls;
     }
 
+
     /**
-     * Examines the current dice and returns the scoring sections this
-     * roll satisfies.
+     * Examines the current dice and returns the scoring sections this roll
+     * satisfies.
      *
-     * @return a list of valid upper and lower sections; empty if the
-     *         dice have not been rolled into legal face values
+     * @return a list of valid upper and lower sections; empty if the dice have
+     *     not been rolled into legal face values
      */
     public List<Board.Section> getValidSections() {
         List<Board.Section> valid = new ArrayList<>();
@@ -179,16 +187,16 @@ public class DiceSet {
         return valid;
     }
 
+
     /**
-     * Returns the die values that contribute to the requested scoring
-     * section. The result is a primitive {@code int[]} so callers can
-     * use {@code IntStream.of(...).sum()} or check
-     * {@code .length == 0}.
+     * Returns the die values that contribute to the requested scoring section.
+     * The result is a primitive {@code int[]} so callers can use
+     * {@code IntStream.of(...).sum()} or check {@code .length == 0}.
      *
      * @param section
-     *            the scorecard category to analyze
-     * @return the contributing face values, or an empty array if the
-     *         current roll does not satisfy that section
+     *     the scorecard category to analyze
+     * @return the contributing face values, or an empty array if the current
+     *     roll does not satisfy that section
      */
     public int[] getScoringValues(Board.Section section) {
         List<Integer> values = new ArrayList<>();
@@ -197,7 +205,7 @@ public class DiceSet {
         }
 
         if (section instanceof Board.Upper.Section) {
-            int face = faceFor((Board.Upper.Section) section);
+            int face = faceFor((Board.Upper.Section)section);
             for (int i = 0; i < NUM_DICE; i++) {
                 if (dice[i].value() == face) {
                     values.add(dice[i].value());
@@ -212,9 +220,10 @@ public class DiceSet {
         return toIntArray(values);
     }
 
+
     /**
-     * Returns a display representation of all five dice in order,
-     * including held state.
+     * Returns a display representation of all five dice in order, including
+     * held state.
      *
      * @return the five dice separated by spaces
      */
@@ -230,16 +239,18 @@ public class DiceSet {
         return result.toString();
     }
 
+
     /**
      * Checks whether the given index refers to one of the five dice.
      *
      * @param index
-     *            the index to check
+     *     the index to check
      * @return true if the index is between 0 and 4 inclusive
      */
     private boolean isValidIndex(int index) {
         return index >= 0 && index < NUM_DICE;
     }
+
 
     /**
      * Counts how many dice currently show each face from 1 through 6.
@@ -257,14 +268,14 @@ public class DiceSet {
         return counts;
     }
 
+
     /**
-     * Adds each unused-pattern upper section that the current counts
-     * satisfy.
+     * Adds each unused-pattern upper section that the current counts satisfy.
      *
      * @param valid
-     *            the list receiving matching sections
+     *     the list receiving matching sections
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      */
     private void addValidUpperSections(
         List<Board.Section> valid,
@@ -278,13 +289,14 @@ public class DiceSet {
         }
     }
 
+
     /**
      * Adds each lower section that the current counts satisfy.
      *
      * @param valid
-     *            the list receiving matching sections
+     *     the list receiving matching sections
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      */
     private void addValidLowerSections(
         List<Board.Section> valid,
@@ -312,22 +324,24 @@ public class DiceSet {
         }
     }
 
+
     /**
      * Maps an upper-section category to its die face.
      *
      * @param section
-     *            the upper-section category
+     *     the upper-section category
      * @return the matching face value from 1 through 6
      */
     private int faceFor(Board.Upper.Section section) {
         return section.ordinal() + MIN_FACE;
     }
 
+
     /**
      * Copies a list of boxed integers into a primitive array.
      *
      * @param values
-     *            the boxed face values
+     *     the boxed face values
      * @return a primitive {@code int[]} of the same values
      */
     private int[] toIntArray(List<Integer> values) {
@@ -338,13 +352,14 @@ public class DiceSet {
         return result;
     }
 
+
     /**
      * Returns whether any face appears at least {@code needed} times.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @param needed
-     *            the minimum number of matching dice
+     *     the minimum number of matching dice
      * @return true if some face meets the required count
      */
     private boolean hasOfAKind(int[] counts, int needed) {
@@ -356,12 +371,12 @@ public class DiceSet {
         return false;
     }
 
+
     /**
-     * Returns whether the counts are three of one face and two of
-     * another.
+     * Returns whether the counts are three of one face and two of another.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @return true if the roll is a full house
      */
     private boolean isFullHouse(int[] counts) {
@@ -378,36 +393,38 @@ public class DiceSet {
         return hasThree && hasTwo;
     }
 
+
     /**
      * Returns whether the dice contain four consecutive faces.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @return true if the roll contains a small straight
      */
     private boolean isSmallStraight(int[] counts) {
         return hasConsecutive(counts, SMALL_STRAIGHT_LENGTH);
     }
 
+
     /**
      * Returns whether the dice contain five consecutive faces.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @return true if the roll is a large straight
      */
     private boolean isLargeStraight(int[] counts) {
         return hasConsecutive(counts, LARGE_STRAIGHT_LENGTH);
     }
 
+
     /**
-     * Returns whether the dice contain the given number of consecutive
-     * faces.
+     * Returns whether the dice contain the given number of consecutive faces.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @param length
-     *            how many consecutive faces are required
+     *     how many consecutive faces are required
      * @return true if such a run is present
      */
     private boolean hasConsecutive(int[] counts, int length) {
@@ -420,16 +437,17 @@ public class DiceSet {
         return false;
     }
 
+
     /**
-     * Returns whether every face from {@code start} through {@code end}
-     * appears at least once.
+     * Returns whether every face from {@code start} through {@code end} appears
+     * at least once.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @param start
-     *            the first face in the run
+     *     the first face in the run
      * @param end
-     *            the last face in the run
+     *     the last face in the run
      * @return true if each face in that range is present
      */
     private boolean hasRun(int[] counts, int start, int end) {
@@ -441,11 +459,12 @@ public class DiceSet {
         return true;
     }
 
+
     /**
      * Returns whether all five dice currently show a legal face value.
      *
      * @param counts
-     *            face counts for values 1 through 6
+     *     face counts for values 1 through 6
      * @return true if exactly five legal faces were counted
      */
     private boolean allDiceRolled(int[] counts) {
