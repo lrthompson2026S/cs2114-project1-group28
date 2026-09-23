@@ -71,7 +71,6 @@ public class Player {
                 case "Release" -> releaseDie(dice);
                 case "Roll" -> dice.roll();
                 case "Score" -> finished = tryScore(dice);
-                default -> throw new UnknownError();
             }
         }
 
@@ -225,17 +224,7 @@ public class Player {
      */
     private boolean tryScratch() {
         Board.Section section = chooseSection("Choose a section to scratch");
-
-        if (section == null) {
-            return false;
-        }
-
-        if (!board.scratch(section)) {
-            System.out.println("That section cannot be scratched.");
-            return false;
-        }
-
-        return true;
+        return board.scratch(section);
     }
 
 
